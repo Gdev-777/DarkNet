@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darknet</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* General styling for the page */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #282c34;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #333;
+            padding: 10px 0;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+        }
+        nav a:hover {
+            background-color: #555;
+        }
+        .container {
+            padding: 20px;
+        }
+        .watchlist, .portfolio {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .stock-card, .portfolio-card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            width: 30%;
+            padding: 15px;
+            margin: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .stock-card:hover, .portfolio-card:hover {
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+        .stock-card h3, .portfolio-card h3 {
+            margin: 0;
+        }
+        .stock-card p, .portfolio-card p {
+            margin: 10px 0;
+        }
+        .stock-card button, .portfolio-card button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #28a745;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .stock-card button:hover, .portfolio-card button:hover {
+            background-color: #218838;
+        }
+        #chartContainer {
+            max-width: 800px;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <h1>DarkNet</h1>
+    </header>
+    
+    <!-- Navigation Bar -->
+    <nav>
+        <a href="#">Home</a>
+        <a href="#watchlist">Market</a>
+        <a href="#portfolio">Portfolio</a>
+        <a href="#chartContainer">Live Prices</a>
+    </nav>
+    
+    <!-- Main Content Section -->
+    <div class="container">
+        <!-- Watchlist Section -->
+        <h2>Today's Market Watchlist</h2>
+        <div class="watchlist" id="watchlist">
+            <!-- Stock cards will be dynamically inserted here -->
+        </div>
+        
+        <!-- Portfolio Section -->
+        <h2>Your Portfolio</h2>
+        <div class="portfolio" id="portfolio">
+            <!-- Portfolio cards will be dynamically inserted here -->
+        </div>
+        
+        <!-- Chart Section -->
+        <div id="chartContainer">
+            <h2>Live Price Updates</h2>
+            <canvas id="priceChart"></canvas>
+        </div>
+    </div>
+
+    <!-- JavaScript Section -->
+    <script>
+        /* Mock stock data */
+        const stocks = [
+            { name: "Commerad Shipping Inc. (CSHI)", price: 175.23 },
+            { name: "Staylor Weed and Lethals (SWAL) ", price: 285.67 },
+            { name: "Rhino Under fur trade (RUFT)", price: 132.89 },
+            { name: "Ms.America Guns and weapons (MAG)", price: 123.45 },
+            { name: "Drive to Canada Pills (DTCP) ", price: 315.55 },
+            { name: "Tarazan Hacks (TRZH)", price: 510.10 },
+            { name: "John Doe IDs (JDID)", Price: 634.65 },
+            { name: "Killer Whale Exotic Animals (KWEA)", price: 257.12}
+        ];
+
+        /* Portfolio data */
+        const portfolio = {};
+
+        /* Get references to DOM elements */
+        const watchlist = document.getElementById("watchlist");
+        const portfolioContainer = document.getElementById("portfolio");
+        const priceChart = document.getElementById("priceChart").getContext("2d");
+
+        /* Render stock cards into the watchlist section */
+        function renderStocks() {
+        	const watchlist = document.getElementById("watchlist");
+            watchlist.innerHTML = '';
+            stocks.forEach((stock, index) => {
+                const stockCard = document.createElement("div");
+                stockCard.className = "stock-card";
+                stockCard.innerHTML = `
+                    <h3>${stock.name}</h3>
+                    <p>Price: $${stock.price.toFixed(2)}</p>
+                    <button onclick="buyStock(${index})">Buy</button>
+                `;
+                watchlist.appendChild(stockCard);
+            });
+        }
+
+        /* Render portfolio cards into the portfolio section */
+        function renderPortfolio() {
+            portfolioContainer.innerHTML = '';
+            Object.keys(portfolio).forEach(stockName => {
+                const portfolioCard = document.createElement("div");
+                portfolioCard.className = "portfolio-card";
+                const quantity = portfolio[stockName].quantity;
+                const value = (portfolio[stockName].price * quantity).toFixed(2);
+                portfolioCard.innerHTML = `
+                    <h3>${stockName}</h3>
+                    <p>Quantity: ${quantity}</p>
+                    <p>Total Value: $${value}</p>
+                `;
+                portfolioContainer.appendChild(portfolioCard);
+            });
+        }
+
+        /* Buy a stock and update the portfolio */
+        function buyStock(index) {
+            const stock = stocks[index];
+            const quantity = prompt(`Enter quantity of ${stock.name} to buy:`);
+            if (quantity && !isNaN(quantity)) {
+                const qty = parseInt(quantity);
+                if (portfolio[stock.name]) {
+                    portfolio[stock.name].quantity += qty;
+                } else {
+                    portfolio[stock.name] = { quantity: qty, price: stock.price };
+                }
+                alert(`Bought ${qty} shares of ${stock.name}`);
+                renderPortfolio();
+            } else {
+                alert("Invalid quantity entered.");
+            }
+        }
+
+        /* Simulate live price updates */
+        function updatePrices() {
+            stocks.forEach(stock => {
+                const change = (Math.random() - 0.5) * 2;
+                stock.price += change;
+                stock.price = Math.max(stock.price, 0);
+            });
+            renderStocks();
+        }
+
+        /* Initialize Chart.js for live price updates */
+        const chart = new Chart(priceChart, {
+            type: "line",
+            data: {
+                labels: stocks.map(stock => stock.name),
+                datasets: [{
+                    label: "Stock Prices",
+                    data: stocks.map(stock => stock.price),
+                    borderColor: "blue",
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    X: { title: { display: true, text: "Stocks" } },
+                    Y: { title: { display: true, text: "Price (USD)" } }
+                }
+            }
+        });
+
+        /* Update the chart with new data */
+        function updateChart() {
+            chart.data.datasets[0].data = stocks.map(stock => stock.price);
+            chart.update();
+        }
+
+        /* Initial render */
+        renderStocks();
+        renderPortfolio();
+        setInterval(() => {
+            updatePrices();
+            updateChart();
+        }, 3000);
+    </script>
+</body>
+</html>

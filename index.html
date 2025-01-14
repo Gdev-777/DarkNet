@@ -161,7 +161,7 @@
         
         PortfolioCointainer.innerHTML = '';
         Object.keys(Portfolio).forEach(stockName => {
-            const stock = stocks.find(S => s.name === stockName)
+            const stock = stocks.find(s => s.name === stockName)
             const latestPrice = stock ? stock.price : Portfolio[stockName].price;
             const quantity = Portfolio[stockName].quantity;
             const totalValue = (quantity * stock.price).toFixed(2);

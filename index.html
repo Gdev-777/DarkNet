@@ -1,10 +1,22 @@
 <!DOCTYPE html>
 <html>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
 <style>
     Body {
         Font-family: Arial, sans-serif;
         background-color: lavenderblush;
+        margin: 0;
+        padding: 0;
 
+    }
+    header {
+        background-color: #282c34;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
     }
     nav {
         display: flex;
@@ -21,36 +33,88 @@
     nav a:hover {
         background-color: lavender;
     }
+    .container {
+       padding: 20px;
+
+    }
+    .watchlist, .Portfolio {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    .stock-card, .Portfolio-card {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        width: 30%;
+        padding: 15px;
+        margin: 10px;
+        text-align: center;
+        box-shadow: 0 4px rgba(0, 0, 0, 0.2);
+    }
+    .stock-card:hover, .Portfolio-card:hover {
+        box-shadow: 0, 6px, rgba(0, 0, 0, 0.3);
+    }
+    .stock-card h3, .Portfolio-card h3 {
+        margin: 0;
+    }
+    .stock-card p, .Portfolio-card p {
+        margin: 10px 0;
+    }
+    .stock-card button, .Portfolio-card button {
+        padding: 10px 20px;
+        border:  none;
+        background-color: #28a745;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .stock-card button:hover, .Portfolio-card button:hover {
+        background-color: #218838;
+    }
+    #chartContainer {
+        max-width: 800px;
+        margin: 20px auto;
+    }
 </style>
 <head>
-    <title>DarkNet</title>
+    <title>DarkNet - A Stock Name</title>
 </head>
 <body>
     <header>
+        <h1>DarkNet - A Stock Game</h1>
         <nav>
             <a href="#">Home</a>
-            <a href="#watchlist">Others</a>
+            <a href="#watchlist-title">Market Watchlist</a>
+            <a href="#Portfolio-title">Your Portfolio</a>
+            <a href="#chartContainer">Live Price Chart</a>
         </nav>
     </header>
-    <h1>DarkNet</h1>
+    <h2 id="watchlist-title">Market Watchlist</h2>
     <div class="watchlist" id="watchlist">
 
     </div>
-    <h2>Your Portfolio</h2>
+    <h2 id="Portfolio-title">Your Portfolio</h2>
     <div class="Portfolio" id="Portfolio">
 
+    </div>
+    <div id="chartContainer">
+        <h2>Live Price Updates</h2>
+        <canvas id="priceChart"></canvas>
     </div>
     
 
 </body>
 <script>
     const stocks = [
-        { name: "Apple (AAPL)", price: 175.23},
-        { name: "Tesla (TSLA)", price: 285.67 },
-        { name: "Amazon (AMZN)", price: 132.89 },
-        { name: "Google (GOOGL)", price: 123.45 },
-        { name: "Microsoft (MSFT)", price: 315.55 },
-        { name: "Nvidia (NVDA)", price: 510.10 }
+    { name: "Commerad Shipping Inc. (CSHI)", price: 175.23 },
+            { name: "Staylor Weed and Lethals (SWAL) ", price: 285.67 },
+            { name: "Rhino Under fur trade (RUFT)", price: 132.89 },
+            { name: "Ms.America Guns and weapons (MAG)", price: 123.45 },
+            { name: "Drive to Canada Pills (DTCP) ", price: 315.55 },
+            { name: "Tarazan Hacks (TRZH)", price: 510.10 },
+            { name: "John Doe IDs (JDID)", price: 634.65 },
+            { name: "Killer Whale Exotic Animals (KWEA)", price: 257.12}
     ];
 
 
@@ -70,8 +134,78 @@
     }
     const Portfolio = {};
     function buyStock(index) {
-        const stock = stocks[index]
+        const stock = stocks[index];
+        const quantity = prompt(`How many shares of ${stock.name} would you like to buy?`)
+
+        if (quantity && !isNaN(quantity)){
+            const qty = parseInt(quantity);
+            if(Portfolio[stock.name]) {
+                Portfolio[stock.name].quantity += qty;
+
+            }else {
+                Portfolio[stock.name] = {quantity: qty, price: stock.price};
+
+            }
+            alert(`Bougt ${qty} shares of ${stock.name}`);
+            renderPortfolio();
+
+        } else {
+            alert(`Invalid quantity. Please enter a valid number.`)
+        }
+
     }
+    function renderPortfolio() {
+        const PortfolioCointainer = document.getElementById("Portfolio");
+        
+        PortfolioCointainer.innerHTML = '';
+        Object.keys(Portfolio).forEach(stockName => {
+            const stock = stocks.find(S => s.name === stockName)
+            const latestPrice = stock ? stock.price : Portfolio[stockName].price;
+            const quantity = Portfolio[stockName].quantity;
+            const totalValue = (quantity * stock.price).toFixed(2);
+            const PortfolioCard = document.createElement("div");
+            PortfolioCard.className = "Portfolio-card";
+            PortfolioCard.innerHTML = `
+            <h3>${stockName}</h3>
+            <p>Quantity: ${stock.quantity}</p>
+            <p>Total Value: $${totalValue}</p>
+            `;
+            PortfolioCointainer.appendChild(PortfolioCard);
+        });
+    }
+    function updatePrices() {
+        stocks.forEach(stock => {
+            const change = (Math.random() - 0.5) * 2;
+            stock.price += change;
+            stock.price = Math.max(stock.price, 0.1);
+
+        });
+        renderstocks();
+        renderPortfolio();
+        priceChart.data.datasets[0].data = stocks.map(stock => stock.price);
+        priceChart.update();
+    }
+    const priceChartCtx = document.getElementById("priceChart").getContext("2d");
+    const priceChart = new Chart(priceChartCtx, {
+        type: "bar",
+        data: {
+            labels: stocks.map(stock => stock.name),
+            datasets: [{
+                label: "Stock Prices",
+                data: stocks.map(stock => stock.price),
+                backgroundColor: "rgba(45, 85, 255, 1)",
+                fill: false
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                X: {title: {display: true, text: "Stocks"}},
+                Y: {title: {display: true, text: "Price (USD)"}}
+            }
+        }
+    });
+    setInterval(updatePrices, 1000);
     renderstocks();
 </script>
 </html>

@@ -48,7 +48,7 @@ function renderPortfolio() {
     const portfolioContainer = document.getElementById("portfolio");
     portfolioContainer.innerHTML = "";
     Object.keys(portfolio).forEach(stockName => {
-        const stock = stocks.find(S => s.name === stockName);
+        const stock = stocks.find(s => s.name === stockName);
         const latestPrice = stock ? stock.price : portfolio[stockName].price;
         const quantity = portfolio[stockName].quantity;
         const totalValue = (quantity * latestPrice).toFixed(2);
@@ -91,13 +91,13 @@ const priceChart = new Chart(priceChartCtx, {
     options: {
         responsive: true,
         scales: {
-            X: { // Configuration for the X-axis
+            x: { // Configuration for the X-axis
                 title: {
                     display: true,
                     text: "Stocks"
                 }
             },
-            Y: { // Configuration for the Y-axis
+            y: { // Configuration for the Y-axis
                 title: {
                     display: true,
                     text: "Price (USD)"

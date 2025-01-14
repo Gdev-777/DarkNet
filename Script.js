@@ -83,34 +83,27 @@ const priceChart = new Chart(priceChartCtx, {
         datasets: [{
             label: "Stock Prices",
             data: stocks.map(stock => stock.price),
-            backgroundColor: [
-                "rgba(45, 85, 255, 0.5)",
-                "rgba(85, 45, 255, 0.5)",
-                "rgba(255, 85, 45, 0.5)",
-                "rgba(45, 255, 85, 0.5)",
-                "rgba(255, 255, 45, 0.5)",
-                "rgba(45, 85, 255, 0.5)",
-                "rgba(255, 45, 85, 0.5)",
-                "rgba(85, 255, 45, 0.5)"
-            ],
-            borderColor: [
-                "rgba(45, 85, 255, 1)",
-                "rgba(85, 45, 255, 1)",
-                "rgba(255, 85, 45, 1)",
-                "rgba(45, 255, 85, 1)",
-                "rgba(255, 255, 45, 1)",
-                "rgba(45, 85, 255, 1)",
-                "rgba(255, 45, 85, 1)",
-                "rgba(85, 255, 45, 1)"
-            ],
+            backgroundColor: "rgba(45, 85, 255, 0.5)",
+            borderColor: "rgba(45, 85, 255, 1)",
             borderWidth: 1
         }]
     },
     options: {
         responsive: true,
         scales: {
-            X: { title: { display: true, text: "Stocks" } },
-            Y: { title: { display: true, text: "Price (USD)" } }
+            X: { // Configuration for the X-axis
+                title: {
+                    display: true,
+                    text: "Stocks"
+                }
+            },
+            Y: { // Configuration for the Y-axis
+                title: {
+                    display: true,
+                    text: "Price (USD)"
+                },
+                beginAtZero: true // Ensures the Y-axis starts at 0
+            }
         }
     }
 });

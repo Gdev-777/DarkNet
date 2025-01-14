@@ -1,68 +1,71 @@
-body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-        }
-        header {
-            background-color: #282c34;
-            color: white;
-            padding: 10px 20px;
-            text-align: center;
-        }
-        nav {
-            display: flex;
-            justify-content: space-around;
-            background-color: #333;
-            padding: 10px 0;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-        }
-        nav a:hover {
-            background-color: #555;
-        }
-        .container {
-            padding: 20px;
-        }
-        .watchlist, .portfolio {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-        }
-        .stock-card, .portfolio-card {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            width: 30%;
-            padding: 15px;
-            margin: 10px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        .stock-card:hover, .portfolio-card:hover {
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-        }
-        .stock-card h3, .portfolio-card h3 {
-            margin: 0;
-        }
-        .stock-card p, .portfolio-card p {
-            margin: 10px 0;
-        }
-        .stock-card button, .portfolio-card button {
-            padding: 10px 20px;
-            border: none;
-            background-color: #28a745;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .stock-card button:hover, .portfolio-card button:hover {
-            background-color: #218838;
-        }
-        #chartContainer {
-            max-width: 800px;
-            margin: 20px auto;
-        }
+ Body {
+        Font-family: Arial, sans-serif;
+        background-color: lavenderblush;
+        margin: 0;
+        padding: 0;
+
+    }
+    header {
+        background-color: #282c34;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+    }
+    nav {
+        display: flex;
+        justify-content: space-around;
+        background-color: #333;
+        padding: 10px 0;
+    }
+    nav a {
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+
+    }
+    nav a:hover {
+        background-color: lavender;
+    }
+    .container {
+       padding: 20px;
+
+    }
+    .watchlist, .Portfolio {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    .stock-card, .Portfolio-card {
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        width: 30%;
+        padding: 15px;
+        margin: 10px;
+        text-align: center;
+        box-shadow: 0 4px rgba(0, 0, 0, 0.2);
+    }
+    .stock-card:hover, .Portfolio-card:hover {
+        box-shadow: 0, 6px, rgba(0, 0, 0, 0.3);
+    }
+    .stock-card h3, .Portfolio-card h3 {
+        margin: 0;
+    }
+    .stock-card p, .Portfolio-card p {
+        margin: 10px 0;
+    }
+    .stock-card button, .Portfolio-card button {
+        padding: 10px 20px;
+        border:  none;
+        background-color: #28a745;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .stock-card button:hover, .Portfolio-card button:hover {
+        background-color: #218838;
+    }
+    #chartContainer {
+        max-width: 800px;
+        margin: 20px auto;
+    }

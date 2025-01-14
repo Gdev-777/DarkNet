@@ -1,4 +1,4 @@
-console.log(scripts loaded);
+console.log("scripts loaded");
 const stocks = [
     { name: "Commerad Shipping Inc. (CSHI)", price: 175.23 },
     { name: "Staylor Weed and Lethals (SWAL)", price: 285.67 },

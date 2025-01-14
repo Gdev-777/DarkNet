@@ -1,3 +1,4 @@
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 console.log("scripts loaded");
 const stocks = [
     { name: "Commerad Shipping Inc. (CSHI)", price: 175.23 },

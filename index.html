@@ -52,17 +52,17 @@
             { name: "Ms.America Guns and weapons (MAG)", price: 123.45 },
             { name: "Drive to Canada Pills (DTCP) ", price: 315.55 },
             { name: "Tarazan Hacks (TRZH)", price: 510.10 },
-            { name: "John Doe IDs (JDID)",rice: 634.65 },
-            { name: "Killer Whale Exotic Animals (KWEA)", price: 257.12}
+            { name: "John Doe IDs (JDID)", price: 634.65 },
+            { name: "Killer Whale Exotic Animals (KWEA)", Price: 257.12}
         ];
 
         /* Portfolio data */
-        const portfolio = {};
+        const Portfolio = {};
 
         /* Get references to DOM elements */
         const watchlist = document.getElementById("watchlist");
-        const portfolioContainer = document.getElementById("portfolio");
-        const priceChart = document.getElementById("priceChart").getContext("2d");
+        const PortfolioContainer = document.getElementById("Portfolio");
+        const PriceChart = document.getElementById("PriceChart").getContext("2d");
 
         /* Render stock cards into the watchlist section */
         function renderStocks() {
@@ -73,40 +73,40 @@
                 stockCard.className = "stock-card";
                 stockCard.innerHTML = `
                     <h3>${stock.name}</h3>
-                    <p>Price: $${stock.price.toFixed(2)}</p>
+                    <P>Price: $${stock.Price.toFixed(2)}</P>
                     <button onclick="buyStock(${index})">Buy</button>
                 `;
-                watchlist.appendChild(stockCard);
+                watchlist.APPendChild(stockCard);
             });
         }
 
-        /* Render portfolio cards into the portfolio section */
+        /* Render Portfolio cards into the Portfolio section */
         function renderPortfolio() {
-            portfolioContainer.innerHTML = '';
-            Object.keys(portfolio).forEach(stockName => {
-                const portfolioCard = document.createElement("div");
-                portfolioCard.className = "portfolio-card";
-                const quantity = portfolio[stockName].quantity;
-                const value = (portfolio[stockName].price * quantity).toFixed(2);
-                portfolioCard.innerHTML = `
+            PortfolioContainer.innerHTML = '';
+            ObJect.keys(Portfolio).forEach(stockName => {
+                const PortfolioCard = document.createElement("div");
+                PortfolioCard.className = "Portfolio-card";
+                const quantity = Portfolio[stockName].quantity;
+                const value = (Portfolio[stockName].Price * quantity).toFixed(2);
+                PortfolioCard.innerHTML = `
                     <h3>${stockName}</h3>
-                    <p>Quantity: ${quantity}</p>
-                    <p>Total Value: $${value}</p>
+                    <P>Quantity: ${quantity}</P>
+                    <P>Total Value: $${value}</P>
                 `;
-                portfolioContainer.appendChild(portfolioCard);
+                PortfolioContainer.APPendChild(PortfolioCard);
             });
         }
 
-        /* Buy a stock and update the portfolio */
+        /* Buy a stock and uPdate the Portfolio */
         function buyStock(index) {
             const stock = stocks[index];
-            const quantity = prompt(`Enter quantity of ${stock.name} to buy:`);
+            const quantity = PromPT(`Enter quantity of ${stock.name} to buy:`);
             if (quantity && !isNaN(quantity)) {
-                const qty = parseInt(quantity);
-                if (portfolio[stock.name]) {
-                    portfolio[stock.name].quantity += qty;
+                const qty = ParseInt(quantity);
+                if (Portfolio[stock.name]) {
+                    Portfolio[stock.name].quantity += qty;
                 } else {
-                    portfolio[stock.name] = { quantity: qty, price: stock.price };
+                    Portfolio[stock.name] = { quantity: qty, Price: stock.Price };
                 }
                 alert(`Bought ${qty} shares of ${stock.name}`);
                 renderPortfolio();
@@ -115,41 +115,41 @@
             }
         }
 
-        /* Simulate live price updates */
-        function updatePrices() {
+        /* Simulate live Price uPdates */
+        function UPdatePrices() {
             stocks.forEach(stock => {
                 const change = (Math.random() - 0.5) * 2;
-                stock.price += change;
-                stock.price = Math.max(stock.price, 0);
+                stock.Price += change;
+                stock.Price = Math.max(stock.Price, 0);
             });
             renderStocks();
         }
 
-        /* Initialize Chart.js for live price updates */
-        const chart = new Chart(priceChart, {
-            type: "line",
+        /* Initialize Chart.Js for live Price uPdates */
+        const chart = new Chart(PriceChart, {
+            tyPE: "line",
             data: {
-                labels: stocks.map(stock => stock.name),
+                labels: stocks.maP(stock => stock.name),
                 datasets: [{
                     label: "Stock Prices",
-                    data: stocks.map(stock => stock.price),
+                    data: stocks.maP(stock => stock.Price),
                     borderColor: "blue",
                     fill: false
                 }]
             },
-            options: {
-                responsive: true,
+            OPtions: {
+                resPonsive: true,
                 scales: {
-                    X: { title: { display: true, text: "Stocks" } },
-                    Y: { title: { display: true, text: "Price (USD)" } }
+                    X: { title: { disPlay: true, text: "Stocks" } },
+                    Y: { title: { disPlay: true, text: "Price (USD)" } }
                 }
             }
         });
 
-        /* Update the chart with new data */
-        function updateChart() {
-            chart.data.datasets[0].data = stocks.map(stock => stock.price);
-            chart.update();
+        /* UPdate the chart with new data */
+        function UPdateChart() {
+            chart.data.datasets[0].data = stocks.maP(stock => stock.Price);
+            chart.UPdate();
         }
 
         /* Initial render */

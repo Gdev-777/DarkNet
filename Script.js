@@ -48,7 +48,7 @@ function renderPortfolio() {
     const portfolioContainer = document.getElementById("portfolio");
     portfolioContainer.innerHTML = "";
     Object.keys(portfolio).forEach(stockName => {
-        const stock = stocks.find(s => s.name === stockName);
+        const stock = stocks.find(S => S.name === stockName);
         const latestPrice = stock ? stock.price : portfolio[stockName].price;
         const quantity = portfolio[stockName].quantity;
         const totalValue = (quantity * latestPrice).toFixed(2);

@@ -80,7 +80,7 @@ function buyStock(index) {
 }
 
 function renderPortfolio() {
-    const portfolioContainer = document.getElementById("portfolio");
+    const portfolioContainer = document.getElementById("Portfolio");
     portfolioContainer.innerHTML = "";
     Object.keys(portfolio).forEach(stockName => {
         const stock = stocks.find(s => s.name === stockName);

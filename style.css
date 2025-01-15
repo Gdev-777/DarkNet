@@ -30,7 +30,7 @@
        padding: 20px;
 
     }
-    .watchlist, .portfolio {
+    .watchlist, .Portfolio {
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;

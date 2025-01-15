@@ -30,12 +30,12 @@
        padding: 20px;
 
     }
-    .watchlist, .Portfolio {
+    .watchlist, .portfolio {
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
     }
-    .stock-card, .Portfolio-card {
+    .stock-card, .portfolio-card {
         background: white;
         border: 1px solid #ddd;
         border-radius: 8px;
@@ -45,16 +45,16 @@
         text-align: center;
         box-shadow: 0 4px rgba(0, 0, 0, 0.2);
     }
-    .stock-card:hover, .Portfolio-card:hover {
+    .stock-card:hover, .portfolio-card:hover {
         box-shadow: 0, 6px, rgba(0, 0, 0, 0.3);
     }
-    .stock-card h3, .Portfolio-card h3 {
+    .stock-card h3, .portfolio-card h3 {
         margin: 0;
     }
-    .stock-card p, .Portfolio-card p {
+    .stock-card p, .portfolio-card p {
         margin: 10px 0;
     }
-    .stock-card button, .Portfolio-card button {
+    .stock-card button, .portfolio-card button {
         padding: 10px 20px;
         border:  none;
         background-color: #28a745;
@@ -62,7 +62,7 @@
         border-radius: 5px;
         cursor: pointer;
     }
-    .stock-card button:hover, .Portfolio-card button:hover {
+    .stock-card button:hover, .portfolio-card button:hover {
         background-color: #218838;
     }
     #chartContainer {

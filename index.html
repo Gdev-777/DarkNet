@@ -15,12 +15,15 @@
             <a href="#watchlist-title">Market Watchlist</a>
             <a href="#Portfolio-title">Your Portfolio</a>
             <a href="#chartContainer">Live Price Chart</a>
+            <form id="loginForm">
+                <input type="text" id="username" placeholder="Enter username" reqired>
+                <button type="submit" id="login">login</button>
+                <div id="welcomeMessage"></div>
+                <button id="logOut" style="display: none;">logout</button>
+            </form>
+            <div id="moneyDisplay">Balance: $1000</div>
         </nav>
     </header>
-    <form id="loginForm">
-        <input type="text" id="username" placeholder="Enter username" reqired>
-        <button type="submit">login</button>
-    </form>
     <h2 id="watchlist-title">Market Watchlist</h2>
     <div class="watchlist" id="watchlist">
 
@@ -34,7 +37,8 @@
         <canvas id="priceChart"></canvas>
     </div>
      <script>
-const stocks = [
+         let money = localStorage.getItem("money") ? parseFloat(localStorage.getItem("money")) : 1000;
+let stocks = [
     { name: "Commerad Shipping Inc. (CSHI)", price: 175.23 },
     { name: "Staylor Weed and Lethals (SWAL)", price: 285.67 },
     { name: "Rhino Under fur trade (RUFT)", price: 132.89 },
@@ -44,8 +48,13 @@ const stocks = [
     { name: "John Doe IDs (JDID)", price: 634.65 },
     { name: "Killer Whale Exotic Animals (KWEA)", price: 257.12 }
 ];
+         stocks = stocks.map(stock => ({
+             ...stock,
+             history: [stock.price]
+         }));
 
-const portfolio = {};
+
+let portfolio = {};
 
 function renderStocks() {
     const watchlist = document.getElementById("watchlist");
@@ -62,26 +71,55 @@ function renderStocks() {
     });
 }
 
+         const specialEvents = [
+             {
+                 type: "positive",
+                 description: "Technology breakthrough boosts market confidence!",
+                 effect: stock => stock.price *= 1.5,
+             },
+             {
+                 type: "negative",
+                 description: " scandal rocks the company, causing a sell-off!",
+                 effect: stock => stock.price *= 0.7, 
+             },
+             {
+                 type: "market-wide",
+                 description: "Federal Reserve announces interest rate hike!",
+                 effect: stock => stock.price *= 0.9, 
+             },
+         ];
+
 function buyStock(index) {
     const stock = stocks[index];
     const quantity = prompt(`How many shares of ${stock.name} would you like to buy?`);
-    if (quantity && !isNaN(quantity)) {
-        const qty = parseInt(quantity);
-        if (portfolio[stock.name]) {
-            portfolio[stock.name].quantity += qty;
-        } else {
-            portfolio[stock.name] = { quantity: qty, price: stock.price };
-        }
-        alert(`Bought ${qty} shares of ${stock.name}`);
-        renderPortfolio();
-    } else {
-        alert("Invalid quantity. Please enter a valid number.");
+    if (!quantity || isNaN(quantity) || quantity <= 0) {
+        alert("Please enter a valid number of shares.")
+        return
     }
+    const totalcost = stock.price * quantity;
+
+    if (totalcost > money) {
+        alert("You do not have enough money to buy this.")
+        return;
+    }
+
+    money -= totalcost;
+    if (portfolio[stock.name]) {
+        portfolio[stock.name].quantity += quantity;
+
+    } else {
+        portfolio[stock.name] = {quantity, price : stock.price}
+    }
+    saveMoney(); 
+    renderPortfolio();
+    updateMoneyDisplay();
+    alert(`Bought ${quantity} shares of ${stock.name} for $${totalCost.toFixed(2)}.`);
+    savePortfolio();
 }
 
 function renderPortfolio() {
     const portfolioContainer = document.getElementById("Portfolio");
-    portfolioContainer.innerHTML = "";
+    portfolioContainer.innerHTML = ``;
     Object.keys(portfolio).forEach(stockName => {
         const stock = stocks.find(s => s.name === stockName);
         const latestPrice = stock ? stock.price : portfolio[stockName].price;
@@ -93,57 +131,208 @@ function renderPortfolio() {
             <h3>${stockName}</h3>
             <p>Quantity: ${quantity}</p>
             <p>Total Value: $${totalValue}</p>
+            <button onclick="sellStock('${stockName}')">Sell</button>
         `;
         portfolioContainer.appendChild(portfolioCard);
     });
 }
 
-function updatePrices() {
-    stocks.forEach(stock => {
-        const change = (Math.random() - 0.5) * 2;
-        stock.price += change;
-        stock.price = Math.max(stock.price, 0.1);
-    });
-    renderStocks();
-    renderPortfolio();
-    priceChart.data.datasets[0].data = stocks.map(stock => stock.price);
-    priceChart.update();
-}
+         function updatePrices() {
+             stocks.forEach(stock => {
+                 const change = (Math.random() - 0.5) * 2; 
+                 stock.price = Math.max(stock.price + change, 0.1); 
+             });
+
+             renderStocks(); 
+             renderPortfolio(); 
+             updatePriceChart(); 
+             savePrices(); 
+         }
+
 
 const priceChartCtx = document.getElementById("priceChart").getContext("2d");
-const priceChart = new Chart(priceChartCtx, {
-    type: "bar",
-    data: {
-        labels: stocks.map(stock => stock.name),
-        datasets: [{
-            label: "Stock Prices",
-            data: stocks.map(stock => stock.price),
-            backgroundColor: "rgba(45, 85, 255, 0.5)",
-            borderColor: "rgba(45, 85, 255, 1)",
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        scales: {
-            x: { // Configuration for the X-axis
-                title: {
-                    display: true,
-                    text: "Stocks"
-                }
-            },
-            y: { // Configuration for the Y-axis
-                title: {
-                    display: true,
-                    text: "Price (USD)"
-                },
-                beginAtZero: true // Ensures the Y-axis starts at 0
-            }
-        }
-    }
-});
+         const priceChart = new Chart(priceChartCtx, {
+             type: "line",
+             data: {
+                 labels: [], 
+                 datasets: stocks.map(stock => ({
+                     label: stock.name,  
+                     data: [], 
+                     backgroundColor: getRandomColor(),
+                     borderColor: getRandomColor(),
+                     borderWidth: 1,
+                 })),
+             },
+             options: {
+                 responsive: true,
+                 scales: {
+                     x: {
+                         title: {
+                             display: true,
+                             text: "Time",
+                         },
+                     },
+                     y: {
+                         title: {
+                             display: true,
+                             text: "Price (USD)",
+                         },
+                         beginAtZero: true,
+                     },
+                 },
+             },
+         });
 
-setInterval(updatePrices, 1000);
+
+         function updatePriceChart() {
+             
+             const newLabel = priceChart.data.labels.length + 1;
+             priceChart.data.labels.push(newLabel);
+
+             
+             stocks.forEach((stock, index) => {
+                 
+                 const dataset = priceChart.data.datasets[index];
+                 dataset.data.push(stock.price);
+
+                 
+                 if (dataset.data.length > 100) {
+                     dataset.data.shift();
+                 }
+             });
+
+             
+             if (priceChart.data.labels.length > 100) {
+                 priceChart.data.labels.shift();
+             }
+
+             
+             priceChart.update();
+         }
+
+
+
+
+         document.getElementById("loginForm").addEventListener("submit", (e) => {
+             e.preventDefault();
+             const username = document.getElementById("username").value;
+             localStorage.setItem("username", username);
+             displayWelcomeMessage(username);
+             console.log("display");
+
+         });
+
+         function getRandomColor() {
+             return `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.7)`;
+         }
+
+         function displayWelcomeMessage(username) {
+             console.log("2");
+             document.getElementById("welcomeMessage").innerText = `Welcome ${username}!`;
+             document.getElementById("login").style.display = "none";
+             document.getElementById("username").style.display = "none";
+             document.getElementById("logOut").style.display = "block";
+             console.log("3");
+         }
+         window.addEventListener("DOMContentLoaded", () => {
+             const savedusername = localStorage.getItem("username");
+             const savedPortfolio = JSON.parse(localStorage.getItem("portfolio"));
+             if (savedPortfolio) {
+                 portfolio = savedPortfolio;
+             }
+             if(savedusername) {
+                 displayWelcomeMessage(savedusername);
+             }
+             const savedStocks = JSON.parse(localStorage.getItem("stocks"));
+             if (savedStocks) {
+                 stocks = savedStocks;
+
+             } else {
+                 localStorage.setItem("stocks", JSON.stringify(stocks));
+             }
+             renderStocks();
+             renderPortfolio();
+             updateMoneyDisplay();
+         });
+         document.getElementById("logOut").addEventListener("click", () => {
+             localStorage.removeItem("username");
+             location.reload();
+         });
+         function savePrices() {
+             localStorage.setItem("stocks", JSON.stringify(stocks));
+
+         }
+
+         function saveMoney() {
+             localStorage.setItem("money", money.toFixed(2));
+         }
+
+         function updateMoneyDisplay() {
+             document.getElementById("moneyDisplay").innerText = `balance: $${money.toFixed(2)}`;
+         }
+
+         function sellStock(stockname) {
+             if (portfolio[stockname]) {
+                 const quantityToSell = parseInt(prompt(`How many ${stockname} shares would you like to sell?`), 10);
+                 if (!quantityToSell || isNaN(quantityToSell) || quantityToSell <= 0) {
+                     alert("Enter a valid number of shares.");
+                     return;
+                 }
+
+                 if (quantityToSell > portfolio[stockname].quantity) {
+                     alert(`You do not have enough ${portfolio[stockname]} shares to sell!`);
+                     return;
+                 }
+
+                 const stock = stocks.find(s => s.name === stockname);
+                 const sellValue = stock.price * quantityToSell;
+                 portfolio[stockname].quantity -= quantityToSell;
+                 money += sellValue;
+
+                 if (portfolio[stockname].quantity === 0) {
+                     delete portfolio[stockname];
+
+                 }
+                 saveMoney();
+                 renderPortfolio();
+                 updateMoneyDisplay();
+                 alert(`Sold ${quantityToSell} shares of ${stockname} for $${sellValue.toFixed(2)}.`);
+                 savePortfolio();
+
+             }
+             else {
+                 alert("You do not own this stock.");
+             }
+
+         }
+         function savePortfolio() {
+             localStorage.setItem("portfolio", JSON.stringify(portfolio));
+         }
+
+         function triggerSpecialEvent() {
+             const event = specialEvents[Math.floor(Math.random() * specialEvents.length)];
+             const targetStock = stocks[Math.floor(Math.random() * stocks.length)];
+
+             if (event.type === "market-wide") {
+                 stocks.forEach(event.effect);
+                 alert(`News alert! ${event.description}`);
+                 
+             } else {
+                 alert(`News alert! ${targetStock.name} ${event.description}`);
+                 event.effect(targetStock);
+             }
+
+             renderStocks();
+             renderPortfolio();
+             updatePriceChart();
+         }
+         setInterval(updatePrices, 3000);
+         setInterval(() => {
+             if (Math.random() < 0.3) { 
+                 triggerSpecialEvent();
+             }
+         }, 10000); 
+
 renderStocks();
      </script>
 
